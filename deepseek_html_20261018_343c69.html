@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>遗书之后 - 老兵之家</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Microsoft YaHei','PingFang SC',sans-serif; }
+body { background:#e8eef4; color:#333; min-height:100vh; }
+a { color:#2b5d8a; text-decoration:none; cursor:pointer; }
+a:hover { text-decoration:underline; }
+
+#clue-bar { position:sticky; top:0; z-index:10; background:#1e2a36; color:#fff; padding:8px 16px; font-size:13px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; }
+#clue-bar .count { color:#ffd24a; font-weight:bold; }
+#clue-bar button { background:#2b5d8a; color:#fff; border:none; padding:5px 12px; border-radius:3px; cursor:pointer; font-size:12px; margin-left:6px; }
+#clue-bar button.gray { background:#4a5a6a; }
+#clue-bar button.red { background:#8a3a3a; }
+
+#forum-page, #login-page { max-width:960px; margin:0 auto; padding:16px; }
+#login-page { display:block; }
+
+.panel { background:#fff; border:1px solid #c3d0dc; border-radius:4px; margin-bottom:14px; }
+.panel .ph { background:linear-gradient(#f0f5fa,#e1e9f1); border-bottom:1px solid #c3d0dc; padding:8px 12px; font-weight:bold; color:#2b5d8a; font-size:14px; display:flex; justify-content:space-between; align-items:center; }
+.panel .pb { padding:12px; }
+
+#search-bar { display:flex; gap:8px; }
+#search-input { flex:1; padding:8px 10px; border:1px solid #b7c6d4; border-radius:3px; font-size:14px; }
+#search-btn { padding:8px 18px; background:#2b5d8a; color:#fff; border:none; border-radius:3px; cursor:pointer; font-size:14px; }
+#search-tip { margin-top:8px; font-size:12px; color:#8a97a4; }
+#search-tip .tk { color:#c0392b; font-weight:bold; background:#fff3cd; padding:0 3px; }
+
+.post-item { padding:10px 12px; border-bottom:1px solid #eef2f6; }
+.post-item:last-child { border-bottom:none; }
+.post-item .title { font-size:15px; color:#2b5d8a; font-weight:bold; }
+.post-item .meta { font-size:12px; color:#8a97a4; margin-top:3px; }
+.post-item .snippet { font-size:13px; color:#555; margin-top:4px; line-height:1.6; }
+.post-item .reply-count { color:#2b5d8a; }
+
+#post-detail { display:none; }
+.floor { padding:12px; border-bottom:1px solid #eef2f6; display:flex; gap:12px; }
+.floor:last-child { border-bottom:none; }
+.floor .avatar { width:44px; height:44px; border-radius:3px; background:#c3d0dc; display:flex; align-items:center; justify-content:center; font-size:12px; color:#fff; flex-shrink:0; }
+.floor .body { flex:1; }
+.floor .author { font-size:13px; color:#2b5d8a; font-weight:bold; }
+.floor .time { font-size:11px; color:#9aa5b0; margin-left:8px; font-weight:normal; }
+.floor .text { font-size:14px; line-height:1.8; margin-top:6px; color:#333; }
+.floor .text .clue { color:#c0392b; font-weight:bold; }
+.floor .text .hint { background:#fff3cd; padding:0 3px; }
+
+#reply-box { padding:12px; background:#f7fafc; border-top:1px solid #c3d0dc; display:none; }
+#reply-input { width:100%; padding:8px; border:1px solid #b7c6d4; border-radius:3px; font-size:14px; resize:vertical; min-height:60px; }
+#reply-send { margin-top:8px; padding:7px 18px; background:#2b5d8a; color:#fff; border:none; border-radius:3px; cursor:pointer; }
+.choice-box { margin-top:10px; display:flex; flex-wrap:wrap; gap:8px; }
+.choice-btn { padding:8px 14px; background:#fff; border:1px solid #2b5d8a; color:#2b5d8a; border-radius:3px; cursor:pointer; font-size:13px; }
+.choice-btn:hover { background:#2b5d8a; color:#fff; }
+.choice-btn:disabled { opacity:.4; cursor:not-allowed; }
+
+.comment-area { padding:12px; background:#fafcfe; border-top:2px solid #c3d0dc; }
+.comment-area h3 { font-size:13px; color:#2b5d8a; margin-bottom:8px; }
+.comment-item { padding:8px 0; border-bottom:1px dashed #e0e6ec; font-size:13px; line-height:1.7; }
+.comment-item:last-child { border-bottom:none; }
+.comment-item .c-author { color:#2b5d8a; font-weight:bold; }
+.comment-item .c-time { color:#9aa5b0; font-size:11px; margin-left:6px; }
+.comment-input-wrap { display:flex; gap:8px; margin-top:10px; }
+.comment-input-wrap input { flex:1; padding:7px; border:1px solid #b7c6d4; border-radius:3px; font-size:13px; }
+.comment-input-wrap button { padding:7px 16px; background:#2b5d8a; color:#fff; border:none; border-radius:3px; cursor:pointer; font-size:13px; }
+
+#login-page .panel { max-width:520px; margin:0 auto 14px; }
+#login-page input { width:100%; padding:10px; border:1px solid #b7c6d4; border-radius:3px; font-size:16px; letter-spacing:4px; text-align:center; }
+#login-page button { width:100%; margin-top:10px; padding:11px; background:#2b5d8a; color:#fff; border:none; border-radius:3px; cursor:pointer; font-size:15px; }
+#login-err { color:#c0392b; font-size:13px; text-align:center; margin-top:8px; min-height:18px; }
+
+#mail-paper { background:#fdfbf3; border:1px solid #d8d0b8; padding:30px 34px; line-height:2; font-size:15px; color:#3a3a3a; font-family:'KaiTi','STKaiti',serif; }
+#mail-paper .hint { color:#c0392b; }
+
+.modal-mask { position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:100; display:none; align-items:center; justify-content:center; }
+.modal-mask.show { display:flex; }
+.modal { background:#fff; border-radius:6px; max-width:560px; width:92%; max-height:82vh; overflow-y:auto; padding:22px; }
+.modal h2 { color:#2b5d8a; font-size:18px; margin-bottom:12px; }
+.modal .close-x { float:right; cursor:pointer; color:#888; font-size:20px; line-height:1; }
+.clue-entry { padding:8px 0; border-bottom:1px solid #eef2f6; font-size:14px; line-height:1.6; }
+.clue-entry:last-child { border-bottom:none; }
+.clue-entry .ct { color:#c0392b; font-weight:bold; }
+.clue-entry.locked { color:#aaa; }
+.clue-entry.clickable { cursor:pointer; }
+.clue-entry.clickable:hover { background:#f0f5fa; }
+.clue-entry .jump { font-size:11px; color:#2b5d8a; margin-left:6px; }
+.clue-group-title { font-size:13px; color:#2b5d8a; font-weight:bold; margin:12px 0 4px; }
+
+#dm-recipient { width:100%; padding:8px; border:1px solid #b7c6d4; border-radius:3px; margin-bottom:8px; }
+#dm-input { width:100%; padding:8px; border:1px solid #b7c6d4; border-radius:3px; min-height:70px; resize:vertical; }
+#dm-send { margin-top:8px; padding:7px 18px; background:#2b5d8a; color:#fff; border:none; border-radius:3px; cursor:pointer; }
+#dm-log { margin-top:12px; font-size:13px; line-height:1.8; background:#f7fafc; padding:10px; border-radius:4px; max-height:220px; overflow-y:auto; }
+.dm-line { padding:4px 0; border-bottom:1px dashed #e0e6ec; }
+.dm-line:last-child { border-bottom:none; }
+.dm-line .who { font-weight:bold; color:#2b5d8a; }
+.dm-line.me .who { color:#c0392b; }
+
+#clue-toast { position:fixed; top:0; left:50%; transform:translateX(-50%) translateY(-120%); z-index:300; background:#1e3a5c; border:2px solid #ffd24a; border-radius:0 0 8px 8px; color:#fff; padding:12px 28px; font-size:14px; box-shadow:0 4px 18px rgba(0,0,0,.4); transition:transform .4s ease; }
+#clue-toast.show { transform:translateX(-50%) translateY(0); }
+#clue-toast .t-title { color:#ffd24a; font-weight:bold; }
+
+#choice-banner { display:none; text-align:center; margin-bottom:14px; }
+#choice-banner button { padding:16px 40px; font-size:18px; font-weight:bold; background:linear-gradient(#c0392b,#922b21); color:#fff; border:2px solid #ffd24a; border-radius:6px; cursor:pointer; box-shadow:0 0 22px rgba(192,57,43,.5); }
+#choice-banner button:hover { background:linear-gradient(#d64535,#a93226); }
+
+#ending-screen { position:fixed; inset:0; z-index:200; background:rgba(10,10,10,.97); color:#ddd; display:none; flex-direction:column; align-items:center; justify-content:flex-start; padding:40px 24px; overflow-y:auto; text-align:center; }
+#ending-screen h1 { font-size:30px; color:#ffd24a; margin-bottom:20px; }
+#ending-screen .ending-body { font-size:15px; line-height:2; max-width:720px; text-align:left; margin-bottom:20px; white-space:pre-wrap; }
+#ending-screen button { margin:8px 6px; padding:11px 26px; background:#2b5d8a; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:15px; }
+#ending-screen .ending-choice { display:block; width:100%; max-width:720px; margin:10px auto; padding:14px; border:none; border-radius:4px; cursor:pointer; font-size:15px; text-align:left; }
+#ending-screen .choice-a { background:#2b5d8a; color:#fff; }
+#ending-screen .choice-b { background:#4a5a6a; color:#fff; }
+#ending-screen .choice-c { background:#7a2a2a; color:#fff; }
+
+#save-code { width:100%; height:80px; font-family:monospace; font-size:12px; padding:8px; border:1px solid #b7c6d4; border-radius:3px; resize:vertical; }
+.save-btns { display:flex; gap:8px; margin-top:8px; }
+.save-btns button { flex:1; padding:8px; background:#2b5d8a; color:#fff; border:none; border-radius:3px; cursor:pointer; font-size:13px; }
+.save-btns button.sec { background:#6b7a89; }
+.small { font-size:12px; color:#8a97a4; line-height:1.7; }
+</style>
+</head>
+<body>
+
+<div id="clue-toast"></div>
+
+<div id="clue-bar">
+    <span>📁 已收集线索：<span class="count" id="clue-count">0</span> / 15</span>
+    <span>
+        <button id="clue-list-btn">线索册</button>
+        <button id="dm-btn">私信</button>
+        <button id="save-btn" class="gray">存档</button>
+        <button id="restart-btn" class="red">重开</button>
+    </span>
+</div>
+
+<div id="login-page">
+    <div class="panel">
+        <div class="ph">哥哥的遗物 · 一封没寄出的信</div>
+        <div class="pb">
+            <div id="mail-paper">
+                <p>小远：</p>
+                <p>如果你看到这封信，说明我没来得及当面说。</p>
+                <p>别信那份事故报告。</p>
+                <p>去「老兵之家」论坛，用我们埋铁盒那天的日子登录——你知道是哪天。<span class="hint">（那年你第一次叫我哥，是三月十二。）</span></p>
+                <p>搜索「<span class="hint">七号阵地</span>」，答案在帖子里。</p>
+                <p>别一个人查。去找老陈。</p>
+                <p style="text-align:right;margin-top:20px;">——哥</p>
+            </div>
+        </div>
+    </div>
+    <div class="panel">
+        <div class="ph">老兵之家 · 会员登录</div>
+        <div class="pb">
+            <p class="small" style="margin-bottom:12px;">请输入论坛登录密码（遗书中有所暗示）。</p>
+            <input id="login-input" type="text" maxlength="8" placeholder="密码">
+            <button id="login-btn">登录</button>
+            <div id="login-err"></div>
+        </div>
+    </div>
+</div>
+
+<div id="forum-page" style="display:none;">
+    <div id="choice-banner"><button id="choice-btn">⚖️ 做出抉择</button></div>
+
+    <div class="panel">
+        <div class="ph">🔍 论坛搜索</div>
+        <div class="pb">
+            <div id="search-bar">
+                <input id="search-input" type="text" placeholder="输入关键词搜索帖子...">
+                <button id="search-btn">搜索</button>
+            </div>
+            <div id="search-tip"></div>
+        </div>
+    </div>
+
+    <div class="panel" id="result-panel" style="display:none;">
+        <div class="ph">搜索结果</div>
+        <div class="pb" id="result-list"></div>
+    </div>
+
+    <div class="panel" id="post-detail" style="display:none;">
+        <div class="ph"><span id="post-title"></span><span style="cursor:pointer;color:#888;font-weight:normal;" id="post-back">← 返回</span></div>
+        <div id="post-floors"></div>
+        <div id="reply-box">
+            <div id="reply-choices" class="choice-box"></div>
+            <textarea id="reply-input" placeholder="回复本帖..."></textarea>
+            <button id="reply-send">发送回复</button>
+        </div>
+        <div class="comment-area" id="post-comments">
+            <h3>💬 评论区</h3>
+            <div id="post-comment-list"></div>
+            <div class="comment-input-wrap">
+                <input id="post-comment-input" placeholder="发表评论...">
+                <button id="post-comment-send">发表</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel" id="forum-home">
+        <div class="ph">老兵之家 · 情感交流区</div>
+        <div class="pb" id="home-posts"></div>
+        <div class="comment-area" id="home-comments">
+            <h3>💬 板块评论</h3>
+            <div id="home-comment-list"></div>
+            <div class="comment-input-wrap">
+                <input id="home-comment-input" placeholder="发表评论...">
+                <button id="home-comment-send">发表</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-mask" id="clue-modal">
+    <div class="modal">
+        <span class="close-x" id="clue-close">×</span>
+        <h2>📁 线索册</h2>
+        <p class="small" style="margin-bottom:8px;">点击已解锁的线索可跳转到发现它的帖子。</p>
+        <div id="clue-entries"></div>
+    </div>
+</div>
+
+<div class="modal-mask" id="dm-modal">
+    <div class="modal">
+        <span class="close-x" id="dm-close">×</span>
+        <h2>✉️ 私信</h2>
+        <p class="small" style="margin-bottom:8px;">选择收件人并输入内容。找对人、说对关键词，也许会有回应。</p>
+        <select id="dm-recipient">
+            <option value="老陈">老陈</option>
+            <option value="山猫">山猫</option>
+            <option value="无名氏">无名氏</option>
+        </select>
+        <textarea id="dm-input" placeholder="输入私信内容..."></textarea>
+        <button id="dm-send">发送</button>
+        <div id="dm-log"></div>
+    </div>
+</div>
+
+<div class="modal-mask" id="save-modal">
+    <div class="modal">
+        <span class="close-x" id="save-close">×</span>
+        <h2>💾 存档码</h2>
+        <p class="small" style="margin-bottom:10px;">复制保存你的存档码。本游戏<b style="color:#c0392b;">不自动保存</b>，请自行保管。</p>
+        <textarea id="save-code" placeholder="点击「导出」生成，或粘贴后点击「导入」"></textarea>
+        <div class="save-btns">
+            <button id="save-export">导出</button>
+            <button id="save-import" class="sec">导入</button>
+            <button id="save-copy" class="sec">复制</button>
+        </div>
+    </div>
+</div>
+
+<div id="ending-screen">
+    <h1 id="ending-title"></h1>
+    <div class="ending-body" id="ending-text"></div>
+    <div id="ending-actions"></div>
+</div>
+
+<script>
+const PASSWORD = '0312';
+
+/* ---------- 15 条线索 ---------- */
+const CLUES = {
+  c1:  { group:'伤亡数字', title:'真实阵亡 9 人', desc:'七号阵地行动真实阵亡 9 人，但官方只上报了 3 人。', source:'p_qi' },
+  c2:  { group:'伤亡数字', title:'差额记为失踪', desc:'多出的 6 人被记成"失踪"，名单上根本没有。', source:'p_qi' },
+  c3:  { group:'伤亡数字', title:'数字被篡改', desc:'上报数字被篡改，目的是掩盖指挥失误。', source:'p_anon' },
+  c4:  { group:'哥哥身份', title:'周明远', desc:'原始名单第 7 位，周明远，正是你的哥哥。', source:'p_list' },
+  c5:  { group:'哥哥身份', title:'因公殉职改判', desc:'哥哥先被记"失踪"，后改判"因公殉职"。', source:'p_list' },
+  c6:  { group:'哥哥身份', title:'不是逃兵，是举报者', desc:'哥哥不是逃兵，他是坚持上报实情的举报者。', source:'p_dm' },
+  c7:  { group:'举报与打压', title:'林卫国转业', desc:'排长林卫国因写报告质疑数字，被以"精神状况不稳"转业。', source:'p_anon' },
+  c8:  { group:'举报与打压', title:'举报者车祸', desc:'另一位坚持上报的士兵在转业后死于一场"交通事故"，并非意外。', source:'p_anon' },
+  c9:  { group:'举报与打压', title:'改报告者升迁', desc:'篡改上报数字的人后来升任营长，存在利益链。', source:'p_lin' },
+  c10: { group:'证据存放', title:'名单藏旧帖存档', desc:'原始名单被藏在论坛旧帖存档区。', source:'p_anon' },
+  c11: { group:'证据存放', title:'备份在老地方', desc:'哥哥说名单备份了一份，藏在"老地方"。', source:'p_dm' },
+  c12: { group:'遗言嘱托', title:'别一个人查', desc:'哥哥叮嘱弟弟：别一个人查。', source:'p_dm' },
+  c13: { group:'遗言嘱托', title:'去找老陈', desc:'哥哥让弟弟去找老陈。', source:'p_dm' },
+  c14: { group:'关键人物', title:'无名氏身份', desc:'无名氏是当年负责整理伤亡名单的文书。', source:'p_anon' },
+  c15: { group:'关键人物', title:'山猫欠命', desc:'山猫是林排长带过的兵，欠他一条命。', source:'p_lin' }
+};
+const CLUE_ORDER = ['c1','c2','c3','c4','c5','c6','c7','c8','c9','c10','c11','c12','c13','c14','c15'];
+
+/* ---------- 帖子 ---------- */
+const POSTS = [
+  { id:'h1', home:true, title:'有人还记得炊事班的老王吗', author:'老兵甲', time:'2021-03-01 10:12',
+    floors:[{author:'老兵甲',time:'2021-03-01 10:12',text:'老王当年做的红烧肉，我这辈子没再吃到过那个味。'}] },
+  { id:'h2', home:true, title:'退伍十年，今天路过老营区', author:'西北狼', time:'2021-03-02 18:40',
+    floors:[{author:'西北狼',time:'2021-03-02 18:40',text:'门口那棵老槐树还在，营房翻新了，认不出来了。'}] },
+  { id:'h3', home:true, title:'谁还有当年的合影', author:'小马', time:'2021-03-05 09:03',
+    floors:[{author:'小马',time:'2021-03-05 09:03',text:'翻遍相册只找到一张，还糊了。谁有清楚的扫一份给我。'}] },
+  { id:'h4', home:true, title:'膝盖又疼了，老毛病', author:'老炮', time:'2021-03-08 21:20',
+    floors:[{author:'老炮',time:'2021-03-08 21:20',text:'当年负重越野落下的病根，一到阴天就犯。'}] },
+  { id:'h5', home:true, title:'下雨天，想起拉练的日子', author:'雨夜', time:'2021-03-11 22:11',
+    floors:[{author:'雨夜',time:'2021-03-11 22:11',text:'那时候累得倒头就睡，现在倒睡不着了。'}] },
+  { id:'h6', home:true, title:'转业之后都干什么了', author:'迷茫', time:'2021-03-14 14:05',
+    floors:[{author:'迷茫',time:'2021-03-14 14:05',text:'回来三年了，还是不太适应。有同感的兄弟吗。'}] },
+  { id:'h7', home:true, title:'分享一首老歌', author:'老歌', time:'2021-03-16 20:30',
+    floors:[{author:'老歌',time:'2021-03-16 20:30',text:'《战友还记得吗》，每次听都想哭。'}] },
+  { id:'h8', home:true, title:'孩子问我当兵的事', author:'父亲', time:'2021-03-19 19:45',
+    floors:[{author:'父亲',time:'2021-03-19 19:45',text:'我不知道该怎么跟他讲。有些事，还是烂在肚子里好。'}] },
+  { id:'h9', home:true, title:'有没有人一起聚聚', author:'组织者', time:'2021-03-22 11:20',
+    floors:[{author:'组织者',time:'2021-03-22 11:20',text:'老规矩，清明节前后，老地方，能来的报个名。'}] },
+  { id:'h10', home:true, title:'论坛又冷清了', author:'版主', time:'2021-03-25 08:00',
+    floors:[{author:'版主',time:'2021-03-25 08:00',text:'大家有空多回来看看。'}] },
+
+  { id:'p_qi', title:'七号阵地，三年了，我还是忘不掉', author:'老陈', time:'2019-03-12 21:14',
+    keywords:['七号阵地','七号','阵地','老陈'],
+    floors:[
+      { author:'老陈', time:'2019-03-12 21:14', text:'三年了。每次闭上眼还是那片焦土。今天喝了点酒，想跟兄弟们说说话。' },
+      { author:'山猫', time:'2019-03-12 21:40', text:'陈哥，别想那么多了。都过去了。' },
+      { author:'老陈', time:'2019-03-12 22:05', text:'过去？官方通报说我们排在那次行动里只阵亡了 3 个人。可我记得清清楚楚，光我亲手抬下来的就有 9 个。', trueClue:'c1' },
+      { author:'无名氏', time:'2019-03-13 02:17', text:'因为真实数字被压下来了。多出来的 6 个，名单上根本没有。', trueClue:'c2' }
+    ],
+    reply:{ choices:[
+        { text:'你说的数字不对，是怎么回事？', reply:'老陈：行动那天，连里让我们报 3 个。可我们抬下来的是 9 个。多出来的 6 个，名单上根本没有。', clue:'c2' },
+        { text:'林卫国是谁？', reply:'老陈：你哥的排长。好人。就是太较真。', clue:'c7' }
+      ], keywordReplies:[ { keywords:['林卫国','排长'], reply:'老陈：林排长当年第一个站出来说数字不对，结果被转业了。', clue:'c7' } ] }
+  },
+  { id:'p_lin', title:'寻找原三连二排 排长 林卫国', author:'山猫', time:'2020-07-08 15:33',
+    keywords:['林卫国','排长','三连','二排','山猫','寻找'],
+    floors:[
+      { author:'山猫', time:'2020-07-08 15:33', text:'有没有人知道林排长的下落？当年七号阵地之后他就转业了，我找了很多年。' },
+      { author:'无名氏', time:'2020-07-09 01:02', text:'别找了。有些事，知道得越少越安全。' },
+      { author:'山猫', time:'2020-07-09 09:15', text:'你什么意思？你知道什么？' },
+      { author:'无名氏', time:'2020-07-09 23:44', text:'七号阵地之后，上报的数字被改过。改报告的人，后来升了。', trueClue:'c9' }
+    ],
+    reply:{ choices:[
+        { text:'改报告的人是谁？', reply:'山猫：林排长转业后，接替他位置的副连长，第二年就提了营长。', clue:'c9' },
+        { text:'你是林排长的什么人？', reply:'山猫：他带过的兵。欠他一条命。', clue:'c15' }
+      ], keywordReplies:[ { keywords:['升','营长','副连长'], reply:'山猫：接替林排长的副连长，第二年就提了营长。', clue:'c9' } ] }
+  },
+  { id:'p_anon', title:'七号阵地行动真实情况——一个知情者的自述', author:'无名氏', time:'2021-04-02 03:58',
+    keywords:['无名氏','真实情况','知情者','自述','真相'],
+    floors:[
+      { author:'无名氏', time:'2021-04-02 03:58', text:'我不是军人，我只是当年负责整理伤亡名单的文书。', trueClue:'c14' },
+      { author:'无名氏', time:'2021-04-02 04:01', text:'真实阵亡 9 人，上报 3 人。差额的 6 人被记成"失踪"，是为了掩盖指挥失误。', trueClue:'c3' },
+      { author:'无名氏', time:'2021-04-02 04:05', text:'当时提出异议的排长林卫国，被以"精神状况不稳"为由转业。', trueClue:'c7' },
+      { author:'无名氏', time:'2021-04-02 04:09', text:'另一位坚持上报实情的士兵，在转业后死于一场"交通事故"。', trueClue:'c8' },
+      { author:'版主', time:'2021-04-02 09:30', text:'本帖内容涉及敏感信息，已做下沉处理。请勿再讨论。' },
+      { author:'无名氏', time:'2021-04-02 23:12', text:'他们可以删帖，删不掉事实。原始名单藏在旧帖存档区。', trueClue:'c10' }
+    ],
+    reply:{ choices:[
+        { text:'原始名单在哪里？', reply:'无名氏：旧帖存档区，搜索"名单"两个字。', clue:'c10' }
+      ], keywordReplies:[ { keywords:['名单','存档','旧帖'], reply:'无名氏：搜"名单"。如果搜不到，说明他们又动过手脚。', clue:'c10' } ] }
+  },
+  { id:'p_list', title:'旧帖存档：三连二排七号阵地行动 伤亡名单（原始）', author:'无名氏', time:'2021-04-03 01:20',
+    keywords:['名单','伤亡','原始','存档','三连二排'],
+    floors:[
+      { author:'无名氏', time:'2021-04-03 01:20', text:'原始名单，共 9 人。其中第 7 位：周明远。', trueClue:'c4' },
+      { author:'无名氏', time:'2021-04-03 01:22', text:'备注：因质疑上报数字，被记"失踪"，后改判"因公殉职"。', trueClue:'c5' },
+      { author:'无名氏', time:'2021-04-03 01:25', text:'名单整理人签名一栏被涂掉了。我记得那个名字——就是后来升营长的那个人。', trueClue:'c9' }
+    ],
+    reply:{ choices:[
+        { text:'周明远……是我哥。', reply:'无名氏：……你是他弟弟？那你更该看看你哥最后给我发的私信。', clue:'c6' }
+      ], keywordReplies:[ { keywords:['私信','最后'], reply:'无名氏：私信区，找"给无名氏"。你哥留了话。', clue:'c6' } ] }
+  },
+  { id:'p_dm', title:'私信：周明远 → 无名氏', author:'系统', time:'2018-11-30 23:59',
+    keywords:['私信','周明远','给无名氏','最后','留言','明远'],
+    floors:[
+      { author:'周明远', time:'2018-11-30 23:59', text:'名单我备份了一份，藏在老地方。如果我出事，去找我弟弟。他叫小远。', trueClue:'c11' },
+      { author:'周明远', time:'2018-11-30 23:59', text:'告诉他，别一个人查，去找老陈。', trueClue:'c12' },
+      { author:'周明远', time:'2018-11-30 23:59', text:'老陈是个靠得住的人，他什么都知道。', trueClue:'c13' },
+      { author:'周明远', time:'2018-11-30 23:59', text:'我哥不是逃兵，他是举报者。', trueClue:'c6' }
+    ],
+    reply:{ choices:[], keywordReplies:[] }
+  },
+  { id:'p_fake', title:'关于七号阵地，我听到的另一个版本', author:'知情人', time:'2021-05-11 13:33',
+    keywords:['七号阵地','另一个版本','知情人'], fake:true,
+    floors:[
+      { author:'知情人', time:'2021-05-11 13:33', text:'我听说林排长当年是自杀的，跟数字没关系。' },
+      { author:'知情人', time:'2021-05-11 13:35', text:'还有人说真实数字其实是 5 个，不是 9 个。' },
+      { author:'无名氏', time:'2021-05-11 20:10', text:'别信他。这不是我发的东西。' }
+    ],
+    reply:{ choices:[], keywordReplies:[] }
+  }
+];
+
+/* ---------- 搜索提示 ---------- */
+const SEARCH_TIPS = [
+  { after:0, tip:'试试搜索「<span class="tk">七号阵地</span>」。' },
+  { after:1, tip:'老陈提到了排长。试试搜索「<span class="tk">林卫国</span>」或「<span class="tk">排长</span>」。' },
+  { after:3, tip:'有人自称知情者。试试搜索「<span class="tk">无名氏</span>」或「<span class="tk">真相</span>」。' },
+  { after:6, tip:'原始名单在旧帖存档。试试搜索「<span class="tk">名单</span>」。' },
+  { after:10, tip:'哥哥留下了私信。试试搜索「<span class="tk">私信</span>」、「<span class="tk">周明远</span>」或「<span class="tk">给无名氏</span>」。' }
+];
+
+/* ---------- 私信规则 ---------- */
+const DM_RULES = [
+  { to:'老陈', keywords:['七号阵地','数字','名单'], reply:'老陈：你小子……你是明远的弟弟吧。你哥的事，我知道的不多。但有一点我能肯定——数字是 9，不是 3。', clue:'c1' },
+  { to:'老陈', keywords:['林卫国','排长'], reply:'老陈：林排长被转业了。他什么都没做错，就是太较真。', clue:'c7' },
+  { to:'山猫', keywords:['林卫国','排长','下落'], reply:'山猫：林排长……我欠他一条命。当年要不是他把我从火里拖出来，我早没了。', clue:'c15' },
+  { to:'山猫', keywords:['升','营长','副连长'], reply:'山猫：接替林排长的副连长，第二年就提了营长。有些话我不敢多说。', clue:'c9' },
+  { to:'无名氏', keywords:['名单','原始'], reply:'无名氏：名单在旧帖存档区。搜"名单"。别用主账号下载。', clue:'c10' },
+  { to:'无名氏', keywords:['私信','周明远','最后'], reply:'无名氏：你哥最后给我发了私信。他说名单备份在"老地方"。', clue:'c11' }
+];
+const DM_WRONG = { '老陈':'老陈：我不认识你，别乱打听。', '山猫':'山猫：你是谁？这些事不是你能问的。', '无名氏':'无名氏：有些事，知道得越少越安全。' };
+
+const state = {
+  phase:'login', foundClues:new Set(), viewedPosts:new Set(), interacted:new Set(),
+  dmSent:[], ending:null, choiceShown:false,
+  postComments:{}, homeComments:[], extraReplies:{}
+};
+
+const $ = id => document.getElementById(id);
+
+function showClueToast(title){
+  const t=$('clue-toast');
+  t.innerHTML=`<span class="t-title">🔍 获得线索：</span>${title}`;
+  t.classList.add('show');
+  clearTimeout(showClueToast._t);
+  showClueToast._t=setTimeout(()=> t.classList.remove('show'), 2200);
+}
+
+/* ---------- 重开：不依赖 location.reload，iframe 内也可靠 ---------- */
+function restartGame(){
+  state.foundClues = new Set();
+  state.viewedPosts = new Set();
+  state.interacted = new Set();
+  state.dmSent = [];
+  state.ending = null;
+  state.choiceShown = false;
+  state.postComments = {};
+  state.homeComments = [];
+  state.extraReplies = {};
+
+  $('ending-screen').style.display = 'none';
+  $('ending-actions').innerHTML = '';
+  $('ending-title').textContent = '';
+  $('ending-text').textContent = '';
+
+  $('choice-banner').style.display = 'none';
+  $('result-panel').style.display = 'none';
+  $('post-detail').style.display = 'none';
+
+  $('login-input').value = '';
+  $('login-err').textContent = '';
+  $('search-input').value = '';
+  $('search-tip').innerHTML = '';
+  $('dm-log').innerHTML = '';
+
+  document.querySelectorAll('.modal-mask').forEach(m=>m.classList.remove('show'));
+
+  showPage('login');
+  renderClueCount();
+  renderSearchTip();
+  renderHome();
+}
+
+function showPage(p){
+  $('login-page').style.display = p==='login'?'block':'none';
+  $('forum-page').style.display = p==='forum'?'block':'none';
+  state.phase=p;
+}
+$('login-btn').onclick = ()=>{
+  if($('login-input').value.trim()===PASSWORD){ $('login-err').textContent=''; showPage('forum'); renderHome(); renderClueCount(); renderSearchTip(); }
+  else $('login-err').textContent='密码错误。再想想遗书里的暗示。';
+};
+$('login-input').addEventListener('keydown', e=>{ if(e.key==='Enter') $('login-btn').click(); });
+
+/* 顶部栏「重开」 */
+$('restart-btn').onclick = ()=>{
+  if(confirm('确定要重新开始吗？当前进度将全部清除。')){
+    restartGame();
+  }
+};
+
+function renderSearchTip(){
+  let tip='';
+  for(let i=SEARCH_TIPS.length-1;i>=0;i--){ if(state.foundClues.size>=SEARCH_TIPS[i].after){ tip=SEARCH_TIPS[i].tip; break; } }
+  $('search-tip').innerHTML = tip ? '提示：'+tip : '';
+}
+
+function renderHome(){
+  const wrap=$('home-posts'); wrap.innerHTML='';
+  POSTS.filter(p=>p.home).forEach(p=>{
+    const div=document.createElement('div'); div.className='post-item';
+    const rc=(p.floors?p.floors.length:0)+(state.extraReplies[p.id]||0);
+    div.innerHTML=`<div class="title">${p.title}</div><div class="meta">${p.author} · ${p.time} · <span class="reply-count">回复 ${rc}</span></div>`;
+    div.onclick=()=> openPost(p.id);
+    wrap.appendChild(div);
+  });
+  renderHomeComments();
+}
+
+function searchPosts(q){
+  q=q.trim().toLowerCase(); if(!q) return [];
+  return POSTS.filter(p=>{ if(!p.keywords) return false;
+    return p.keywords.some(k=> k.toLowerCase()===q || k.toLowerCase().includes(q) || q.includes(k.toLowerCase()) ); });
+}
+$('search-btn').onclick = ()=>{
+  const results=searchPosts($('search-input').value);
+  $('post-detail').style.display='none'; $('forum-home').style.display='none'; $('result-panel').style.display='block';
+  const list=$('result-list'); list.innerHTML='';
+  if(results.length===0){ list.innerHTML='<p class="small" style="padding:8px;">没有找到相关帖子。</p>'; return; }
+  results.forEach(p=>{
+    const rc=(p.floors?p.floors.length:0)+(state.extraReplies[p.id]||0);
+    const div=document.createElement('div'); div.className='post-item';
+    div.innerHTML=`<div class="title">${p.title}</div><div class="meta">${p.author} · ${p.time} · <span class="reply-count">回复 ${rc}</span></div>
+      <div class="snippet">${p.floors[0].text.replace(/<[^>]+>/g,'').slice(0,50)}...</div>`;
+    div.onclick=()=> openPost(p.id);
+    list.appendChild(div);
+  });
+};
+$('search-input').addEventListener('keydown', e=>{ if(e.key==='Enter') $('search-btn').click(); });
+
+let currentPost=null;
+function openPost(id){
+  const p=POSTS.find(x=>x.id===id); if(!p) return;
+  currentPost=p; state.viewedPosts.add(id);
+  $('result-panel').style.display='none'; $('forum-home').style.display='none'; $('post-detail').style.display='block';
+  $('post-title').textContent=p.title;
+  const wrap=$('post-floors'); wrap.innerHTML='';
+  p.floors.forEach(f=>{
+    const floor=document.createElement('div'); floor.className='floor';
+    floor.innerHTML=`<div class="avatar">${f.author.slice(0,1)}</div>
+      <div class="body"><div class="author">${f.author}<span class="time">${f.time}</span></div>
+      <div class="text">${f.text}</div></div>`;
+    wrap.appendChild(floor);
+    if(f.trueClue) unlockClue(f.trueClue);
+  });
+  renderReplyBox(p);
+  renderPostComments(p.id);
+  renderSearchTip();
+}
+$('post-back').onclick = ()=>{
+  $('post-detail').style.display='none'; $('forum-home').style.display='block';
+  renderHome();
+};
+
+function renderReplyBox(p){
+  const box=$('reply-box'), choices=$('reply-choices'); choices.innerHTML='';
+  if(p.reply && p.reply.choices && p.reply.choices.length){
+    box.style.display='block';
+    p.reply.choices.forEach((c,idx)=>{
+      const key=p.id+'_'+idx; const btn=document.createElement('button');
+      btn.className='choice-btn'; btn.textContent=c.text;
+      if(state.interacted.has(key)) btn.disabled=true;
+      btn.onclick=()=>{ if(state.interacted.has(key)) return; state.interacted.add(key); appendNpc(p,c.reply); if(c.clue) unlockClue(c.clue); btn.disabled=true; state.extraReplies[p.id]=(state.extraReplies[p.id]||0)+1; };
+      choices.appendChild(btn);
+    });
+  } else box.style.display='none';
+}
+function appendNpc(p,text){
+  const floor=document.createElement('div'); floor.className='floor';
+  floor.innerHTML=`<div class="avatar">N</div><div class="body"><div class="author">${p.author}<span class="time">刚刚</span></div><div class="text">${text}</div></div>`;
+  $('post-floors').appendChild(floor);
+}
+$('reply-send').onclick = ()=>{
+  if(!currentPost) return;
+  const v=$('reply-input').value.trim(); if(!v) return;
+  appendMe(v); $('reply-input').value='';
+  state.extraReplies[currentPost.id]=(state.extraReplies[currentPost.id]||0)+1;
+  let matched=null;
+  ((currentPost.reply&&currentPost.reply.keywordReplies)||[]).forEach(kr=>{ if(!matched&&kr.keywords.some(k=>v.includes(k))) matched=kr; });
+  setTimeout(()=>{
+    if(matched){ appendNpc(currentPost,matched.reply); if(matched.clue) unlockClue(matched.clue); state.extraReplies[currentPost.id]=(state.extraReplies[currentPost.id]||0)+1; }
+    else { const floor=document.createElement('div'); floor.className='floor';
+      floor.innerHTML=`<div class="avatar">N</div><div class="body"><div class="author">${currentPost.author}<span class="time">刚刚</span></div><div class="text">（对方暂时没有回应。）</div></div>`;
+      $('post-floors').appendChild(floor); state.extraReplies[currentPost.id]=(state.extraReplies[currentPost.id]||0)+1; }
+  },400);
+};
+function appendMe(text){
+  const floor=document.createElement('div'); floor.className='floor';
+  floor.innerHTML=`<div class="avatar" style="background:#2b5d8a;">你</div><div class="body"><div class="author">小远<span class="time">刚刚</span></div><div class="text">${escapeHtml(text)}</div></div>`;
+  $('post-floors').appendChild(floor);
+}
+function escapeHtml(s){ return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function renderPostComments(postId){
+  const list=$('post-comment-list'); list.innerHTML='';
+  const arr=state.postComments[postId]||[];
+  if(arr.length===0){ list.innerHTML='<p class="small">还没有评论。</p>'; }
+  arr.forEach(c=>{
+    const d=document.createElement('div'); d.className='comment-item';
+    d.innerHTML=`<span class="c-author">${c.author}</span><span class="c-time">${c.time}</span><div>${escapeHtml(c.text)}</div>`;
+    list.appendChild(d);
+  });
+}
+$('post-comment-send').onclick = ()=>{
+  if(!currentPost) return;
+  const v=$('post-comment-input').value.trim(); if(!v) return;
+  if(!state.postComments[currentPost.id]) state.postComments[currentPost.id]=[];
+  state.postComments[currentPost.id].push({ author:'小远', time:'刚刚', text:v });
+  state.extraReplies[currentPost.id]=(state.extraReplies[currentPost.id]||0)+1;
+  $('post-comment-input').value='';
+  renderPostComments(currentPost.id);
+};
+$('post-comment-input').addEventListener('keydown', e=>{ if(e.key==='Enter') $('post-comment-send').click(); });
+
+function renderHomeComments(){
+  const list=$('home-comment-list'); list.innerHTML='';
+  if(state.homeComments.length===0){ list.innerHTML='<p class="small">还没有评论。</p>'; return; }
+  state.homeComments.forEach(c=>{
+    const d=document.createElement('div'); d.className='comment-item';
+    d.innerHTML=`<span class="c-author">${c.author}</span><span class="c-time">${c.time}</span><div>${escapeHtml(c.text)}</div>`;
+    list.appendChild(d);
+  });
+}
+$('home-comment-send').onclick = ()=>{
+  const v=$('home-comment-input').value.trim(); if(!v) return;
+  state.homeComments.push({ author:'小远', time:'刚刚', text:v });
+  $('home-comment-input').value='';
+  renderHomeComments();
+};
+$('home-comment-input').addEventListener('keydown', e=>{ if(e.key==='Enter') $('home-comment-send').click(); });
+
+function unlockClue(key){
+  if(state.foundClues.has(key)||!CLUES[key]) return;
+  state.foundClues.add(key);
+  renderClueCount(); showClueToast(CLUES[key].title);
+  renderSearchTip();
+  if(state.foundClues.size>=15 && !state.choiceShown) showChoiceButton();
+}
+function renderClueCount(){ $('clue-count').textContent=state.foundClues.size; renderClueBook(); }
+function renderClueBook(){
+  const wrap=$('clue-entries'); wrap.innerHTML='';
+  let lastGroup='';
+  CLUE_ORDER.forEach(k=>{
+    const c=CLUES[k]; const found=state.foundClues.has(k);
+    if(c.group!==lastGroup){ lastGroup=c.group;
+      const g=document.createElement('div'); g.className='clue-group-title'; g.textContent='【'+c.group+'】'; wrap.appendChild(g); }
+    const div=document.createElement('div');
+    div.className='clue-entry'+(found?' clickable':' locked');
+    if(found){
+      div.innerHTML=`<div class="ct">✔ ${c.title}<span class="jump">→ 跳转</span></div><div>${c.desc}</div>`;
+      div.onclick=()=>{
+        $('clue-modal').classList.remove('show');
+        const target=POSTS.find(p=>p.id===c.source);
+        if(target){ openPost(c.source); $('result-panel').style.display='none'; $('forum-home').style.display='none'; }
+      };
+    } else {
+      div.innerHTML=`<div class="ct">??? 未解锁</div>`;
+    }
+    wrap.appendChild(div);
+  });
+}
+$('clue-list-btn').onclick = ()=>{ renderClueBook(); $('clue-modal').classList.add('show'); };
+$('clue-close').onclick = ()=> $('clue-modal').classList.remove('show');
+
+$('dm-btn').onclick = ()=> $('dm-modal').classList.add('show');
+$('dm-close').onclick = ()=> $('dm-modal').classList.remove('show');
+$('dm-send').onclick = ()=>{
+  const to=$('dm-recipient').value, text=$('dm-input').value.trim(); if(!text) return;
+  $('dm-input').value='';
+  const log=$('dm-log');
+  const line=document.createElement('div'); line.className='dm-line me';
+  line.innerHTML=`<span class="who">你 → ${to}：</span>${escapeHtml(text)}`; log.appendChild(line); log.scrollTop=log.scrollHeight;
+  state.dmSent.push({to,text});
+  let matched=null;
+  DM_RULES.forEach(r=>{ if(!matched && r.to===to && r.keywords.some(k=>text.includes(k))) matched=r; });
+  setTimeout(()=>{
+    const rline=document.createElement('div'); rline.className='dm-line';
+    const reply=matched?matched.reply:(DM_WRONG[to]||'（没有回应）');
+    rline.innerHTML=`<span class="who">${to}：</span>${reply}`; log.appendChild(rline); log.scrollTop=log.scrollHeight;
+    if(matched && matched.clue) unlockClue(matched.clue);
+  },500);
+};
+
+function showChoiceButton(){
+  state.choiceShown=true;
+  $('choice-banner').style.display='block';
+  $('choice-banner').scrollIntoView({behavior:'smooth'});
+}
+$('choice-btn').onclick = ()=> showEndingChoice();
+
+function showEndingChoice(){
+  const screen=$('ending-screen'); screen.style.display='flex';
+  $('ending-title').textContent='真相已经拼齐';
+  $('ending-text').textContent='你收集齐了全部 15 条线索。\n\n哥哥周明远不是逃兵，他是举报者。\n七号阵地的伤亡数字被篡改，举报者被处理成意外，篡改者却升了官。\n\n现在，你手里握着全部证据。\n你要怎么做？';
+  $('ending-actions').innerHTML=`
+    <button class="ending-choice choice-a" data-e="a">A. 公开真相——把证据发到论坛，让所有人看见</button>
+    <button class="ending-choice choice-b" data-e="b">B. 沉默——删掉一切，带着哥哥的秘密继续生活</button>
+    <button class="ending-choice choice-c" data-e="c">C. 私下去找那个人——用自己的方式讨个说法</button>`;
+  $('ending-actions').querySelectorAll('.ending-choice').forEach(b=> b.onclick=()=> showFinalEnding(b.dataset.e));
+}
+function showFinalEnding(e){
+  const E={
+    a:{ t:'结局 · 光',
+      p:`你把原始名单、私信截图、每一个帖子的时间线，一条一条整理成一篇长帖。你没有用真名，只写了一句开头：「我哥哥叫周明远，他不是逃兵。」\n\n帖子发出去的头三个小时，老兵之家几乎没人回应。第四个小时，老陈在下面回了一个字：「真。」第五个小时，山猫转发了。第六个小时，帖子被删了。\n\n但截图已经传遍了每一个相关的群。有人把它转到了微博，有人做成了长图，有人把它念给身边的老兵听。三天后，一家媒体联系了当年的几位当事人。一个月后，那份被压了多年的伤亡数字，重新被摆上了桌面。\n\n你收到了一封没有署名的私信，只有一句话：「你哥会为你骄傲。」\n\n很多年后，你依然会想起那个晚上——你坐在哥哥的房间，一字一句把真相敲进论坛的发帖框。窗外很安静。你终于替他把那句话说完了。` },
+    b:{ t:'结局 · 灰',
+      p:`你关掉了论坛，清空了所有浏览记录，连那封遗书也重新折好，放回了原来的抽屉。\n\n哥哥的秘密被你锁进了一个没人知道的文件夹。你删掉了私信，退出了账号。老兵之家的页面在你眼前暗下去，像一扇慢慢合上的门。\n\n生活照常继续。你上班，下班，和同事吃饭，偶尔笑。没有人知道你心里揣着什么。只有每年三月十二，你都会独自坐一会儿，什么也不做。\n\n有一次，你在整理旧物时翻到哥哥的一张照片。照片背面写着一行字，是他的笔迹：「有些事，总要有人记得。」你看了很久，最后把照片翻过来，放回了原处。\n\n真相没有被说出口。但它还在。在你知道它、记得它、并且选择替它沉默的每一天里，它都还在。` },
+    c:{ t:'结局 · 暗',
+      p:`你顺着那几条线索，一点点拼出了那个人的地址。\n\n他住在一个普通的居民区，楼下有一棵老树，晚上会有人遛狗。你在楼下站了很久，看着三楼那扇亮着灯的窗。你知道他就在里面——那个当年改了数字、踩着别人的命往上走的人。\n\n你想了很多。想哥哥在名单上的第 7 位，想那 6 个被记成"失踪"的人，想老陈说的"数字不对"，想无名氏那句"知道得越少越安全"。\n\n你最终没有敲门。\n\n不是因为原谅，也不是因为害怕。你只是忽然明白，哥哥当年选择把真相写下来，而不是去讨一个说法——他想要的从来不是报复，是有人记得。\n\n你转身离开，走进夜色里。从今往后，你会一直记得那扇门，记得那盏灯，记得自己曾经站在这里，做过一个选择。\n\n有些事，开始了就没有回头路。但你没有走进去——这本身，也是你替哥哥做的最后一个决定。` }
+  };
+  const x=E[e]||E.b;
+  $('ending-title').textContent=x.t; $('ending-text').textContent=x.p;
+  $('ending-actions').innerHTML='<button id="ending-restart">重新开始</button>';
+  $('ending-restart').onclick=()=> restartGame();
+  state.ending=e;
+}
+
+$('save-btn').onclick = ()=> $('save-modal').classList.add('show');
+$('save-close').onclick = ()=> $('save-modal').classList.remove('show');
+$('save-export').onclick = ()=>{
+  const data={v:3, clues:Array.from(state.foundClues), posts:Array.from(state.viewedPosts), inter:Array.from(state.interacted),
+    dm:state.dmSent, ending:state.ending, phase:state.phase,
+    postComments:state.postComments, homeComments:state.homeComments, extraReplies:state.extraReplies};
+  $('save-code').value=btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+};
+$('save-import').onclick = ()=>{
+  const code=$('save-code').value.trim(); if(!code){ alert('请先粘贴存档码。'); return; }
+  try{
+    const data=JSON.parse(decodeURIComponent(escape(atob(code))));
+    if(!data.v) throw new Error('invalid');
+    state.foundClues=new Set(data.clues||[]); state.viewedPosts=new Set(data.posts||[]);
+    state.interacted=new Set(data.inter||[]); state.dmSent=data.dm||[]; state.ending=data.ending||null;
+    state.postComments=data.postComments||{}; state.homeComments=data.homeComments||[]; state.extraReplies=data.extraReplies||{};
+    if(data.phase) showPage(data.phase);
+    renderClueCount(); renderSearchTip();
+    if(state.foundClues.size>=15) showChoiceButton();
+    alert('存档导入成功。'); $('save-modal').classList.remove('show');
+  }catch(e){ alert('存档码无效。'); }
+};
+$('save-copy').onclick = ()=>{
+  const ta=$('save-code'); if(!ta.value){ alert('请先导出。'); return; }
+  ta.select(); document.execCommand('copy'); alert('已复制。');
+};
+
+function init(){ showPage('login'); renderClueCount(); renderSearchTip(); }
+init();
+</script>
+</body>
+</html>
